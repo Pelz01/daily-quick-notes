@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Notes</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg: #0a0a0f;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #f0f0f5;
+      --text-dim: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --red: #f85149;
+    }
+    
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    #root {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    
+    .subtitle {
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+    }
+    
+    .app {
+      width: 100%;
+      max-width: 450px;
+    }
+    
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+    }
+    
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .stat {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+    
+    .todo-list {
+      margin-bottom: 1rem;
+    }
+    
+    .todo-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      background: var(--bg);
+      transition: opacity 0.2s;
+    }
+    
+    .todo-item.completed {
+      opacity: 0.5;
+    }
+    
+    .todo-item.completed .todo-text {
+      text-decoration: line-through;
+    }
+    
+    .todo-checkbox {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-right: 0.75rem;
+      cursor: pointer;
+    }
+    
+    .todo-text {
+      flex: 1;
+      font-size: 0.95rem;
+    }
+    
+    .todo-delete {
+      background: none;
+      border: none;
+      color: var(--red);
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      font-size: 1rem;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    
+    .todo-delete:hover {
+      opacity: 1;
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .input-group input {
+      flex: 1;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .add-btn {
+      padding: 0.75rem 1.25rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 0.5rem;
+      color: #000;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    
+    .add-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState } = React;
+    
+    function App() {
+      const [todos, setTodos] = useState([
+        { id: 1, text: 'Welcome to your todo list!', done: false },
+        { id: 2, text: 'Click to check off items', done: true },
+        { id: 3, text: 'Add your own tasks below', done: false },
+      ]);
+      const [input, setInput] = useState('');
+      
+      const addTodo = () => {
+        if (input.trim()) {
+          setTodos([...todos, { id: Date.now(), text: input, done: false }]);
+          setInput('');
+        }
+      };
+      
+      const toggle = (id) => {
+        setTodos(todos.map(t => t.id === id ? { ...t, done: !t.done } : t));
+      };
+      
+      const deleteTodo = (id) => {
+        setTodos(todos.filter(t => t.id !== id));
+      };
+      
+      const completed = todos.filter(t => t.done).length;
+      const remaining = todos.length - completed;
+      
+      return (
+        <div className="app">
+          <h1>Quick Notes</h1>
+          <p className="subtitle">Sticky notes for quick thoughts</p>
+          
+          <div className="card">
+            <div className="stats">
+              <div className="stat">
+                <div className="stat-value">{todos.length}</div>
+                <div className="stat-label">Total</div>
+              </div>
+              <div className="stat">
+                <div className="stat-value" style={{color: '#3fb950'}}>{completed}</div>
+                <div className="stat-label">Done</div>
+              </div>
+              <div className="stat">
+                <div className="stat-value" style={{color: '#58a6ff'}}>{remaining}</div>
+                <div className="stat-label">Left</div>
+              </div>
+            </div>
+            
+            <div className="todo-list">
+              {todos.map(todo => (
+                <div key={todo.id} className={`todo-item ${todo.done ? 'completed' : ''}`}>
+                  <input 
+                    type="checkbox" 
+                    className="todo-checkbox"
+                    checked={todo.done} 
+                    onChange={() => toggle(todo.id)}
+                  />
+                  <span className="todo-text">{todo.text}</span>
+                  <button className="todo-delete" onClick={() => deleteTodo(todo.id)}>✕</button>
+                </div>
+              ))}
+            </div>
+            
+            <div className="input-group">
+              <input 
+                type="text" 
+                placeholder="Add a task..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && addTodo()}
+              />
+              <button className="add-btn" onClick={addTodo}>Add</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
